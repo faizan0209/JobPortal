@@ -1,0 +1,207 @@
+/* UserPage.css */
+
+/* General Page Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+  }
+  
+  .user-page {
+    padding: 20px;
+    width: 100%;
+    height: 89vh;
+    margin: 0 auto;
+  }
+  /* Profile Container */
+.user-profile-container {
+  margin-top: 90px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center; /* Center align content */
+}
+
+/* Profile Section */
+.user-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px; /* Minimal spacing between elements */
+}
+
+/* Profile Icon Styling */
+.profile-icon {
+  font-size: 3em; /* Adjust icon size */
+  color: #777;
+  margin-bottom: 5px; /* Reduce space below the icon */
+}
+
+/* User Name */
+.user-profile h2 {
+  font-size: 1.5em;
+  margin: 0; /* Remove default margins */
+  color: #333;
+}
+
+/* User Email */
+.user-profile p {
+  margin: 0; /* Remove default margins */
+  color: #555;
+  font-size: 1em;
+}
+
+  
+  /* Job Cards Section */
+  h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+  
+  .job-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    gap: 20px;
+  }
+  
+  .job-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* text-align: center; */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .job-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .job-card h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .job-card p {
+    color: #777;
+    margin: 5px 0;
+  }
+  
+  .job-card button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease;
+  }
+  
+  .job-card button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Form Popup */
+  .form-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .form-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+  
+  .form-container h2 {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    font-weight: bold;
+  }
+  
+  .form-container form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-container input[type="text"],
+  .form-container input[type="email"],
+  .form-container input[type="file"] {
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .form-container input[type="file"] {
+    margin: 0;
+  }
+  
+  .form-container button {
+    background-color: #28a745;
+    color: #fff;
+    padding: 10px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    /* margin-top: 10px; */
+    transition: background-color 0.2s ease;
+  }
+  
+  .form-container button:hover {
+    background-color: #218838;
+  }
+  
+  .close-btn {
+    background-color: #dc3545;
+    color: #fff;
+    padding: 10px;
+    font-size: 0.9em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  
+  .close-btn:hover {
+    background-color: #c82333;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .job-cards {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+  
+    .user-profile {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .user-profile img {
+      margin-bottom: 10px;
+    }
+  }
+  
