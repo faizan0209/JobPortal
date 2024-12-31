@@ -1,151 +1,123 @@
-import React, { useEffect, useState } from 'react';
-import { Table, Container, Button, Row, Col, Card, Spinner } from 'react-bootstrap';
-import { getFirestore, collection, getDocs, updateDoc, doc, deleteDoc } from './Firebase'; 
-import { app } from './Firebase';
-import { useAuth } from '../context/authContext';
-import { useNavigate } from 'react-router-dom';
-import { Box } from '@mui/material'; // Import Box from MUI
+import React, { useEffect, useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
+import { getFirestore, collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { auth } from "./Firebase";
+import { useAuth } from "../context/authContext";
 
-const ManageUsers = () => {
-  const { currentUser } = useAuth();
-  const navigate = useNavigate();
+function ManageUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const db = getFirestore();
 
-  useEffect(() => {
-    if (!currentUser) {
-      navigate("/login");
-    }
-  });
+const {currentUser}=useAuth();
+ useEffect(() => {
+     if (!currentUser) {
+       navigate("/login");
+     }
+   });
 
-  const db = getFirestore(app);
 
   // Fetch users from Firestore
   useEffect(() => {
     const fetchUsers = async () => {
-      setLoading(true);
       try {
-        const querySnapshot = await getDocs(collection(db, 'users'));
-        // Map the data to include username, email, and role
-        const userData = querySnapshot.docs.map(doc => ({
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const usersList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          username: doc.data().username,
-          email: doc.data().email,
-          role: doc.data().role || 'user' // Default role if not set
+          ...doc.data(),
         }));
-        setUsers(userData);
+        setUsers(usersList);
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error("Error fetching users: ", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchUsers();
-  }, []);
+  }, [db]);
 
-  // Promote user to admin
-  const handlePromote = async (userId) => {
+  // Delete user from Firestore
+  const handleDelete = async (id) => {
     try {
-      await updateDoc(doc(db, 'users', userId), { role: 'admin' });
-      alert(`User ${userId} promoted to admin.`);
-      setUsers(users.map(user => user.id === userId ? { ...user, role: 'admin' } : user));
+      await deleteDoc(doc(db, "users", id));
+      setUsers(users.filter((user) => user.id !== id)); // Update UI after deletion
+      alert("User deleted successfully!");
     } catch (error) {
-      console.error('Error promoting user:', error);
+      console.error("Error deleting user: ", error);
+      alert("Failed to delete user.");
     }
   };
 
-  // Deactivate user
-  const handleDeactivate = async (userId) => {
-    try {
-      await updateDoc(doc(db, 'users', userId), { active: false });
-      alert(`User ${userId} deactivated.`);
-      setUsers(users.filter(user => user.id !== userId));
-    } catch (error) {
-      console.error('Error deactivating user:', error);
-    }
-  };
+  if (loading) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+        <CircularProgress />
+      </div>
+    );
+  }
 
-  // Delete user
-  const handleDelete = async (userId) => {
-    try {
-      await deleteDoc(doc(db, 'users', userId));
-      alert(`User ${userId} deleted.`);
-      setUsers(users.filter(user => user.id !== userId));
-    } catch (error) {
-      console.error('Error deleting user:', error);
-    }
-  };
 
   return (
-    <Container fluid className="py-5" style={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-      <Row className="mb-4">
-        <Col>
-          <h2 className="text-center text-primary">Manage Users</h2>
-        </Col>
-      </Row>
-      <Row className="justify-content-center">
-        <Col md={10} lg={8}>
-          <Card className="shadow-lg">
-            <Card.Body>
-              {loading ? (
-                <div className="text-center py-5">
-                  <Spinner animation="border" variant="primary" />
-                  <p className="mt-3">Loading users...</p>
-                </div>
-              ) : (
-                <Box sx={{ overflowX: 'auto' }}>
-                  <Table striped bordered hover responsive className="mx-auto">
-                    <thead className="table-dark">
-                      <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {users.map((user) => (
-                        <tr key={user.id}>
-                          <td>{user.username}</td>
-                          <td>{user.email}</td>
-                          <td>{user.role}</td>
-                          <td>
-                            {user.role !== 'admin' && (
-                              <Button
-                                onClick={() => handlePromote(user.id)}
-                                variant="success"
-                                className="me-2"
-                              >
-                                Promote
-                              </Button>
-                            )}
-                            <Button
-                              onClick={() => handleDeactivate(user.id)}
-                              variant="danger"
-                              className="me-2"
-                            >
-                              Deactivate
-                            </Button>
-                            <Button
-                              onClick={() => handleDelete(user.id)}
-                              variant="warning"
-                            >
-                              Delete
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </Box>
-              )}
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+<div className="container">
+
+    <div
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    alignItems: "center",
+    height: "100vh", // Full viewport height for vertical centering
+    width: "100%",   // Full width
+    padding: "0",    // Remove padding for proper centering
+  }}
+>
+<Typography variant="h4" className="mb-4 text-center">
+          Manage Users
+        </Typography>
+      <TableContainer component={Paper}>
+        <Table   striped bordered hover>
+          <TableHead>
+            <TableRow>
+              <TableCell><strong>Name</strong></TableCell>
+              <TableCell><strong>Email</strong></TableCell>
+              <TableCell><strong>Role</strong></TableCell>
+              <TableCell><strong>Actions</strong></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {users.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell>{user.displayName || "N/A"}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.role || "User"}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => handleDelete(user.id)}
+                  >
+                    Delete
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
+    </div>
   );
-};
+}
 
 export default ManageUsers;
