@@ -13,6 +13,8 @@ import ManageUsers from "./components/ManageUsers";
 import JobApplication from "./components/JobApplications";
 import UserDashboard from "./components/UserDashboard";
 import { AuthProvider } from "./context/authContext";
+import Notification from "./components/Notification";
+import HistoryPage from "./components/HistoryPage";
 // import ProtectedRoute from "./components/ProtectedRoutes";
 function App() {
   // Define the router for routing
@@ -62,6 +64,14 @@ function App() {
         {
           path: "/userPage", // Change this path to match the link
           element: <UserDashboard />,
+        },
+        {
+          path: "/notification", // Change this path to match the link
+          element: <Notification/>,
+        },
+        {
+          path: "/history", // Change this path to match the link
+          element: <HistoryPage/>,
         },
       ],
     },

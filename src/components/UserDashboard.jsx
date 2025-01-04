@@ -5,8 +5,11 @@ import { ref, uploadBytes, getDownloadURL } from "./Firebase";
 import { onAuthStateChanged } from "./Firebase";
 import "./UserPage.css"; // Add your CSS file for styling
 import { FaUserCircle } from "react-icons/fa";
+import { IoMail } from "react-icons/io5";
+import { IoMdMailUnread } from "react-icons/io";
+
 import { useAuth } from "../context/authContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function UserPage() {
@@ -32,8 +35,6 @@ function UserPage() {
       navigate("/login");
     }
   });
-
-  
 
   useEffect(() => {
     // Fetch job data from Firestore
@@ -97,33 +98,41 @@ function UserPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!formData.name || !formData.email || !formData.resume) {
       alert("All fields are required.");
       return;
     }
-  
+
     // setLoading(true); // Show loader
     try {
       // Replace with your actual Cloudinary details
-      const cloudinaryUrl = "https://api.cloudinary.com/v1_1/dmcmwflh7/image/upload"; // Cloudinary API endpoint
+      const cloudinaryUrl =
+        "https://api.cloudinary.com/v1_1/dmcmwflh7/image/upload"; // Cloudinary API endpoint
       const uploadPreset = "AppsImage"; // Cloudinary upload preset
-  
+
       // Prepare form data for Cloudinary
       const formDataToUpload = new FormData();
       formDataToUpload.append("file", formData.resume); // File upload
       formDataToUpload.append("upload_preset", uploadPreset); // Upload preset
-      formDataToUpload.append("context", `name=${formData.name}|email=${formData.email}`); // Metadata
-  
+      formDataToUpload.append(
+        "context",
+        `name=${formData.name}|email=${formData.email}`
+      ); // Metadata
+
       // Upload file to Cloudinary
-      const cloudinaryResponse = await axios.post(cloudinaryUrl, formDataToUpload, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-  
+      const cloudinaryResponse = await axios.post(
+        cloudinaryUrl,
+        formDataToUpload,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
       const resumeUrl = cloudinaryResponse.data.secure_url; // Get uploaded file URL
-  
+
       // Save application data to Firestore
       const applicationData = {
         userId: currentUser.uid,
@@ -134,7 +143,7 @@ function UserPage() {
         resumeUrl: resumeUrl,
         appliedAt: new Date(),
       };
-  
+
       await addDoc(collection(db, "applications"), applicationData);
       alert("Application submitted successfully!");
       setShowForm(false);
@@ -146,7 +155,6 @@ function UserPage() {
       // setLoading(false); // Hide loader
     }
   };
-  
 
   return (
     <div className="user-page">
@@ -160,6 +168,64 @@ function UserPage() {
           <p>email: {data.email || "unknown"}</p>
           {console.log(data)}
           <br />
+          <div className="notification flex gap-3">
+            {/* <Link to="/notification" className="bg-gray-200 p-3 block rounded">
+              {false ? (
+                <IoMail className="text-3xl" />
+              ) : (
+                <svg
+                  stroke="currentColor"
+                  fill="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 512 512"
+                  class="text-3xl"
+                  height="1em"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="432" cy="128" r="64" fill="red"></circle>
+                  <path d="M382.9 203.4L256 288 80 170.7V128l176 117.3 101.1-67.4c-9.5-14.3-15.1-31.5-15.1-49.9 0-17.6 5.1-34.1 13.9-48H74.7C51.2 80 32 99.2 32 122.7v266.7c0 23.5 19.2 42.7 42.7 42.7h362.7c23.5 0 42.7-19.2 42.7-42.7V204.1c-13.9 8.8-30.4 13.9-48 13.9-18.2 0-35.1-5.4-49.2-14.6z"></path>
+                </svg>
+              )}
+            </Link> */}
+            <Link to="/history" className="bg-gray-200 p-3 block rounded">
+              {false ? (
+                <IoMail className="text-3xl" />
+              ) : (
+                <svg
+                  stroke="currentColor"
+                  fill="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 24 24"
+                  class="text-3xl"
+                  height="1em"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M12 8v4.414l3.707 3.707-1.414 1.414L10 13.414V8h2zm0-7a10 10 0 11-9.477 13.197l1.736-.992A8 8 0 1012 4V1z"></path>
+                </svg>
+              )}
+            </Link>
+            <Link to="/notification" className="bg-gray-200 p-3 block rounded">
+              {false ? (
+                <IoMail className="text-3xl" />
+              ) : (
+                <svg
+                  stroke="currentColor"
+                  fill="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 512 512"
+                  class="text-3xl"
+                  height="1em"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="432" cy="128" r="64" fill="red"></circle>
+                  <path d="M382.9 203.4L256 288 80 170.7V128l176 117.3 101.1-67.4c-9.5-14.3-15.1-31.5-15.1-49.9 0-17.6 5.1-34.1 13.9-48H74.7C51.2 80 32 99.2 32 122.7v266.7c0 23.5 19.2 42.7 42.7 42.7h362.7c23.5 0 42.7-19.2 42.7-42.7V204.1c-13.9 8.8-30.4 13.9-48 13.9-18.2 0-35.1-5.4-49.2-14.6z"></path>
+                </svg>
+              )}
+            </Link>
+          </div>
         </div>
       </div>
 

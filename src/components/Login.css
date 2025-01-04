@@ -1,12 +1,12 @@
 .bk-img{
-    /* background-image: url(/src/assets/img/pexels-photo-696218.webp); */
+    background-image: url(../assets/img/img2.webp);
     background-color: tomato;
     background-repeat: no-repeat;
     background-position: fixed;
     background-size: cover;
 }
 .bk-img2{
-    /* background-image: url(/src/assets/img/istockphoto-2032134580-612x612.webp); */
+    background-image: url(../assets/img/istockphoto-1181111153-612x612.webp);
     background-color: tomato;
     background-repeat: no-repeat;
     background-position: fixed;

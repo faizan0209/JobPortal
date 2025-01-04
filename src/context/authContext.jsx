@@ -1,20 +1,27 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../components/Firebase";
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState({});
+  const [currentUser, setCurrentUser] = useState(null); // Start with null
   const [details, setDetails] = useState(null);
-  const [showLoader, setShowLoader] = useState(false);
+  const [loading, setLoading] = useState(true); // Loading state for auth initialization
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+      setCurrentUser(user || null);
+      setLoading(false); // Auth state is resolved
     });
 
     return () => unsubscribe();
-  });
+  }, []); // Run only once on component mount
+
+  if (loading) {
+    // Optionally show a loader or return null while auth state resolves
+    return <div>Loading...</div>;
+  }
 
   return (
     <AuthContext.Provider

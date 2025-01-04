@@ -3,6 +3,7 @@ import { auth, signInWithEmailAndPassword } from './Firebase';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
+// import loginImg from "../assets/img/istockphoto-1181111153-612x612.webp"
 
 
 function Login() {

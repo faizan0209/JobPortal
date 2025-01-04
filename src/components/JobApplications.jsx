@@ -3,7 +3,7 @@ import { Table, Container, Button, Modal, Form } from "react-bootstrap";
 import { Typography } from "@mui/material";
 import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs, updateDoc, doc } from "./Firebase";
+import { collection, getDocs, updateDoc, addDoc, doc } from "./Firebase";
 import { db } from "./Firebase"; // Replace with your actual Firebase config
 
 const JobApplications = () => {
@@ -14,6 +14,7 @@ const JobApplications = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [message, setMessage] = useState("");
+  const [validationError, setValidationError] = useState("");
 
   useEffect(() => {
     if (!currentUser) {
@@ -51,14 +52,33 @@ const JobApplications = () => {
   const handleShowModal = (application, status) => {
     setSelectedApplication({ ...application, status });
     setShowModal(true);
+    setValidationError(""); // Clear previous validation errors
   };
 
   const handleApplicationStatus = async () => {
     if (!selectedApplication) return;
+
+    if (message.trim() === "") {
+      setValidationError("Message cannot be empty!");
+      return;
+    }
+
     const { id, status } = selectedApplication;
     try {
       const applicationRef = doc(db, "applications", id);
       await updateDoc(applicationRef, { status, message });
+
+      // Save notification for the user
+      const notificationRef = collection(db, "notifications");
+      await addDoc(notificationRef, {
+        userId: selectedApplication.userId,
+        message: `Your application for ${selectedApplication.jobTitle} has been ${status}. ${
+          message ? `Message: ${message}` : ""
+        }`,
+        status,
+        timestamp: new Date(),
+      });
+
       setClickedButtons((prev) => ({ ...prev, [id]: true })); // Disable buttons
       fetchApplications(); // Refresh applications list
     } catch (error) {
@@ -71,10 +91,7 @@ const JobApplications = () => {
   };
 
   return (
-    <Container
-      className="d-flex justify-content-center align-items-center mt-5 pt-50"
-      style={{ paddingTop: "250px" }}
-    >
+    <Container className="d-flex justify-content-center align-items-center mt-5">
       <div className="w-100">
         <Typography variant="h4" className="mb-4 text-center">
           Job Applications
@@ -157,6 +174,9 @@ const JobApplications = () => {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
               />
+              {validationError && (
+                <Form.Text className="text-danger">{validationError}</Form.Text>
+              )}
             </Form.Group>
           </Form>
         </Modal.Body>
