@@ -3,6 +3,7 @@ import { auth, createUserWithEmailAndPassword } from "./Firebase";
 import { getFirestore, doc, setDoc } from "firebase/firestore"; // Import Firestore functions
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer,toast } from "react-toastify";
 
 function Signup() {
   const navigate = useNavigate();
@@ -13,18 +14,21 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // State for loading
 
   const handleSignup = async (e) => {
     e.preventDefault();
     if ((!username, !email, !password, !confirmPassword)) {
-      alert("Please fill in all fields");
+      toast.error("Please fill in all fields");
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      toast.error("Passwords do not match!");
       return;
     }
+
+    setIsLoading(true); // Start loading
 
     try {
       // Create user with Firebase Authentication
@@ -47,15 +51,17 @@ function Signup() {
       setConfirmPassword("");
 
       // Show success message
-      alert("Account created successfully!");
+      toast.success("Account created successfully!");
 
       // Redirect to login page after 2 seconds
       setTimeout(() => {
+        setIsLoading(false); // Stop loading
         navigate("/login");
       }, 2000);
     } catch (error) {
       setErrorMessage(error.message);
       console.error("Error during signup: ", error);
+      setIsLoading(false); // Stop loading on error
     }
   };
 
@@ -68,10 +74,6 @@ function Signup() {
               <h2 className="text-2xl font-bold text-white sm:text-3xl">
                 Welcome to JobPortal
               </h2>
-              <p className="max-w-xl mt-3 text-gray-100">
-                {/* Join us today to explore exciting recipes, restaurant */}
-                {/* recommendations, and more. Sign up now! */}
-              </p>
             </div>
           </div>
         </div>
@@ -79,9 +81,6 @@ function Signup() {
         <div className="flex items-center w-full max-w-md px-6 mx-auto lg:w-2/6">
           <div className="flex-1">
             <div className="text-center">
-              <div className="flex justify-center mx-auto">
-                {/* <img className="w-auto h-7 sm:h-8" src="ht/tps://merakiui.com/images/logo.svg" alt="logo" /> */}
-              </div>
               <p className="mt-3 text-gray-500 dark:text-gray-300">
                 Create an account to get started
               </p>
@@ -166,9 +165,17 @@ function Signup() {
                     type="submit"
                     className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-300 transform bg-blue-700 rounded-lg hover:bg-opacity-90 transation-all focus:outline-none focus:bg-blue-400 focus:ring focus:ring-blue-300 focus:ring-opacity-50"
                   >
-                    Sign Up
+                    {isLoading ? (
+                      <div className="spinner"></div> // Spinner when loading
+                    ) : (
+                      "Sign Up"
+                    )}
                   </button>
                 </div>
+
+                {isLoading && (
+                  <p className="text-center text-gray-500 mt-2">Creating your account...</p> // Loading message
+                )}
               </form>
 
               <div className="mt-6 text-sm text-center text-gray-400">
@@ -186,6 +193,7 @@ function Signup() {
           </div>
         </div>
       </div>
+      <ToastContainer/>
     </div>
   );
 }

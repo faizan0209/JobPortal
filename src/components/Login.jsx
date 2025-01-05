@@ -3,39 +3,43 @@ import { auth, signInWithEmailAndPassword } from './Firebase';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
-// import loginImg from "../assets/img/istockphoto-1181111153-612x612.webp"
-
 
 function Login() {
   const [errorMessage, setErrorMessage] = useState('');
-  const {currentUser} = useAuth();
-  const [email, setEmail]= useState("")
-  const [password, setPassword]= useState("")
-
-  console.log(currentUser);
-  
+  const [isLoading, setIsLoading] = useState(false);  // State for loading
+  const [successMessage, setSuccessMessage] = useState('');  // State for success message
+  const { currentUser } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
+    setIsLoading(true);  // Start the loader
 
-    // For regular users, proceed with Firebase authentication
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
       setTimeout(() => {
+        setSuccessMessage('Login successful!');
+        setIsLoading(false);
         navigate("/userpage");
       }, 2000);
     } catch (error) {
+      setIsLoading(false);  // Stop the loader
       setErrorMessage("Invalid email or password. Please try again.");
     }
+
     if (email === "faizan123@gmail.com" && password === "FA12345") {
       setTimeout(() => {
+        setSuccessMessage('Admin login successful!');
+        setIsLoading(false);
         navigate("/admin");
       }, 2000);
-      return; // Exit the function to prevent Firebase authentication attempt
+      return;
     }
   };
 
@@ -51,7 +55,7 @@ function Login() {
         <div className="bg-white dark:bg-gray-900">
           <div className="flex justify-center h-screen">
             <div className="hidden bg-cover lg:block lg:w-2/3">
-              <div className="flex items-center h-full px-20 bg-gray-900 bg-opacity-40  bk-img ">
+              <div className="flex items-center h-full px-20 bg-gray-900 bg-opacity-40 bk-img">
                 <div>
                   <h2 className="text-2xl font-bold text-white sm:text-3xl">Welcome Back</h2>
                   <p className="max-w-xl mt-3 text-gray-100">
@@ -63,7 +67,6 @@ function Login() {
 
             <div className="flex items-center w-full max-w-md px-6 mx-auto lg:w-2/6">
               <div className="flex-1 flex-col items-center w-full">
-                {/* <MdRestaurant className="text-orange-500 text-4xl mb-4" /> */}
                 <div className="text-center">
                   <p className="mt-3 text-gray-500 dark:text-gray-300">Sign in to your account</p>
                 </div>
@@ -98,8 +101,14 @@ function Login() {
                       />
                     </div>
 
+                    {isLoading && (
+                      <div className="flex justify-center mt-4">
+                        <div className="spinner-border animate-spin border-t-4 border-blue-500 border-solid rounded-full w-8 h-8"></div>
+                      </div>
+                    )}
 
                     {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
+                    {successMessage && <p className="text-green-500 text-center">{successMessage}</p>}
 
                     <div className="mt-6">
                       <button
@@ -109,7 +118,6 @@ function Login() {
                         Sign in
                       </button>
                     </div>
-
                   </form>
 
                   <div className="mt-6 text-sm text-center text-gray-400">

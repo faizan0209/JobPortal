@@ -19,7 +19,7 @@ const Notifications = () => {
       console.error("User not logged in or currentUser is undefined.");
       return;
     }
-  
+
     try {
       const notificationsRef = collection(db, "notifications");
       const q = query(notificationsRef, where("userId", "==", currentUser.uid));
@@ -33,17 +33,18 @@ const Notifications = () => {
       console.error("Error fetching notifications:", error);
     }
   };
-  
+
   return (
     <Container className="mt-5 py-5 ">
-     <h1 className="fw-bold  text-dark mb-4 py-4" style={{ fontSize: "2rem" }}>
-    Notification
-  </h1>
+      <h1 className="fw-bold  text-dark mb-4 py-4" style={{ fontSize: "2rem" }}>
+        Notification
+      </h1>
       <Table striped bordered hover>
         <thead>
           <tr>
             <th>Message</th>
             <th>Status</th>
+            <th>Interview</th>
             <th>Timestamp</th>
           </tr>
         </thead>
@@ -52,7 +53,15 @@ const Notifications = () => {
             <tr key={notification.id}>
               <td>{notification.message}</td>
               <td>{notification.status}</td>
-              <td>{new Date(notification.timestamp.toDate()).toLocaleString()}</td>
+              <td>
+                {notification.interviewDetails
+                  ? `Venue: ${notification.interviewDetails.venue}, Date: ${notification.interviewDetails.date}`
+                  : "N/A"}
+              </td>
+
+              <td>
+                {new Date(notification.timestamp.toDate()).toLocaleString()}
+              </td>
             </tr>
           ))}
         </tbody>
