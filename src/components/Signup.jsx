@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { auth, createUserWithEmailAndPassword } from "./Firebase";
 import { getFirestore, doc, setDoc } from "firebase/firestore"; // Import Firestore functions
-import "./Login.css";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import './Login.css'; // Assuming the styles are the same
 
 function Signup() {
   const navigate = useNavigate();
@@ -15,10 +15,11 @@ function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false); // State for loading
+  const [successMessage, setSuccessMessage] = useState(""); // Success message state
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    if ((!username, !email, !password, !confirmPassword)) {
+    if (!username || !email || !password || !confirmPassword) {
       toast.error("Please fill in all fields");
       return;
     }
@@ -50,18 +51,18 @@ function Signup() {
       setPassword("");
       setConfirmPassword("");
 
-      // Show success message
-      toast.success("Account created successfully!");
-
-      // Redirect to login page after 2 seconds
+      // Show success message and navigate after 2 seconds
       setTimeout(() => {
+        setSuccessMessage("Account created successfully!");
         setIsLoading(false); // Stop loading
-        navigate("/login");
+        navigate("/login"); // Redirect to login page
       }, 2000);
+
     } catch (error) {
-      setErrorMessage(error.message);
+      setErrorMessage("invalid Creditionals");
       console.error("Error during signup: ", error);
       setIsLoading(false); // Stop loading on error
+      toast.error("An error occurred. Please try again.");
     }
   };
 
@@ -160,40 +161,40 @@ function Signup() {
                   />
                 </div>
 
+                {isLoading && (
+                  <div className="flex justify-center mt-4">
+                    <div className="spinner-border animate-spin border-t-4 border-blue-500 border-solid rounded-full w-8 h-8"></div>
+                  </div>
+                )}
+
+                {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
+                {successMessage && <p className="text-green-500 text-center">{successMessage}</p>}
+
                 <div className="mt-6">
                   <button
                     type="submit"
-                    className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-300 transform bg-blue-700 rounded-lg hover:bg-opacity-90 transation-all focus:outline-none focus:bg-blue-400 focus:ring focus:ring-blue-300 focus:ring-opacity-50"
+                    className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-300 transform bg-blue-700 rounded-lg hover:bg-opacity-90 transition-all focus:outline-none focus:bg-blue-400 focus:ring focus:ring-blue-300 focus:ring-opacity-50"
                   >
-                    {isLoading ? (
-                      <div className="spinner"></div> // Spinner when loading
-                    ) : (
-                      "Sign Up"
-                    )}
+                    {isLoading ? "Creating..." : "Sign Up"}
                   </button>
                 </div>
-
-                {isLoading && (
-                  <p className="text-center text-gray-500 mt-2">Creating your account...</p> // Loading message
-                )}
               </form>
 
               <div className="mt-6 text-sm text-center text-gray-400">
                 Already have an account?{" "}
                 <button
-                  type="button"
                   onClick={() => navigate("/login")}
                   className="text-blue-500 focus:outline-none focus:underline hover:underline"
                 >
-                  Login
+                  Log in
                 </button>
-                .
               </div>
             </div>
           </div>
         </div>
       </div>
-      <ToastContainer/>
+
+      <ToastContainer />
     </div>
   );
 }
